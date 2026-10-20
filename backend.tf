@@ -1,5 +1,9 @@
 terraform {
-  backend "local" {
-    path = "state/terraform.tfstate"
+  cloud {
+    organization = "victor-gb-portfolio"
+
+    workspaces {
+      name = "portfolio-project-bootstrap"
+    }
   }
 }
