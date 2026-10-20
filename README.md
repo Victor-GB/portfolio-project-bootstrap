@@ -1,10 +1,13 @@
 # Portfolio Project Bootstrap
 
-Automation for GitHub repository security and Python development setup
-for existing project scaffolds.
+Terraform automation for creating GitHub repositories and managing a
+consistent repository security baseline.
 
-Work in progress: repository creation is configured; security controls
-and local bootstrap automation are still to be implemented.
+Work in progress: repository creation and HCP state storage have been
+verified. Security controls and existing-repository adoption remain
+to be implemented.
+
+Local Python development setup belongs to a separate automation utility.
 
 ## Terraform state
 
