@@ -5,7 +5,10 @@ resource "github_repository" "projects" {
   description = each.value.description
   visibility  = each.value.visibility
 
-  auto_init = false
+  auto_init    = false
+  has_issues   = true
+  has_projects = false
+  has_wiki     = false
 
   security_and_analysis {
     secret_scanning {
