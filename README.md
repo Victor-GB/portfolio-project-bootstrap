@@ -3,17 +3,18 @@
 Terraform automation for creating GitHub repositories and managing a
 consistent repository security baseline.
 
-Work in progress: repository creation has been verified on Fyyur, and
-the existing asteroid-approach-explorer repository (Neo) has been adopted.
+Repository creation has been verified on Fyyur and Trivia API, and the
+existing asteroid-approach-explorer repository (Neo) has been adopted.
 
-Both repositories now use Terraform-managed Dependabot alerts, security
-updates, weekly Python and GitHub Actions updates, security-update grouping
-rules, secret scanning, push protection and CodeQL default setup. Issues
-are enabled; Projects and Wiki are disabled.
+All three repositories use Terraform-managed Dependabot alerts and security
+updates, weekly dependency updates, security-update grouping rules, secret
+scanning, push protection and CodeQL default setup. Issues are enabled;
+Projects and Wiki are disabled.
 
-Neo's quality checks and CodeQL passed after adoption. A subsequent
-Terraform plan reported no changes across both repositories. Broader
-repeatability checks and final portfolio documentation remain outstanding.
+The complete two-stage creation workflow has been verified on Trivia API.
+Drift detection and reconciliation have also been demonstrated. A final
+Terraform plan reported no changes across all three repositories.
+See [VERIFICATION.md](VERIFICATION.md) for the recorded evidence.
 
 Local Python development setup belongs to a separate automation utility.
 
@@ -46,9 +47,9 @@ Existing populated repositories explicitly use `content_ready = true`.
 Keep this value after setup: changing it to `false` proposes removing the
 Dependabot file and disabling CodeQL.
 
-Compatibility with Fyyur and Neo has been verified through a no-change
-plan. The complete staged creation workflow awaits verification on a new
-project.
+The staged workflow was verified on Trivia API while preserving its supplied
+scaffold history, original remote and application files. The local checkout
+was then synchronised with the Terraform-created Dependabot commit.
 
 Existing resources will be inspected and imported before applying changes.
 Adoption must include review of other repository properties controlled
@@ -57,6 +58,28 @@ by the same Terraform resource.
 Completion requires verified GitHub controls, a subsequent Terraform plan
 with no changes, and preservation of unrelated settings and application
 content.
+
+## Dependency update directories
+
+Each repository accepts these optional inputs:
+
+| Input | Default | Purpose |
+| --- | --- | --- |
+| `pip_directory` | `"/"` | Directory containing Python dependency files |
+| `npm_directory` | `null` | Directory containing npm dependency files; omitted from Dependabot when unset |
+
+Directory paths are relative to the repository root and start with `/`.
+GitHub Actions updates always use `/`.
+
+For example, Trivia API uses:
+
+```hcl
+pip_directory = "/backend"
+npm_directory = "/frontend"
+```
+
+Terraform renders `templates/dependabot.yml.tftpl` and publishes the result
+as `.github/dependabot.yml` in each ready repository.
 
 ## GitHub API authentication
 
