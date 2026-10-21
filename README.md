@@ -4,8 +4,10 @@ Terraform automation for creating GitHub repositories and managing a
 consistent repository security baseline.
 
 Work in progress: repository creation, HCP state storage and Dependabot
-automation have been verified on Fyyur. Additional automated security
-controls and existing-repository adoption remain to be implemented.
+automation have been verified on Fyyur. Terraform now explicitly manages
+Fyyur's existing secret scanning and push protection settings; a refreshed
+plan confirmed no changes. CodeQL integration and existing-repository
+adoption remain outstanding.
 
 Local Python development setup belongs to a separate automation utility.
 
