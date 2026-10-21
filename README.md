@@ -3,12 +3,17 @@
 Terraform automation for creating GitHub repositories and managing a
 consistent repository security baseline.
 
-Work in progress: repository creation, HCP state storage and Dependabot
-automation have been verified on Fyyur. Terraform explicitly manages
-Fyyur's existing secret scanning and push protection settings, and enables
-CodeQL default setup through GitHub's API. CodeQL analysis and a subsequent
-no-change plan have been verified. Existing-repository adoption and broader
-repeatability checks remain outstanding.
+Work in progress: repository creation has been verified on Fyyur, and
+the existing asteroid-approach-explorer repository (Neo) has been adopted.
+
+Both repositories now use Terraform-managed Dependabot alerts, security
+updates, weekly Python and GitHub Actions updates, security-update grouping
+rules, secret scanning, push protection and CodeQL default setup. Issues
+are enabled; Projects and Wiki are disabled.
+
+Neo's quality checks and CodeQL passed after adoption. A subsequent
+Terraform plan reported no changes across both repositories. Broader
+repeatability checks and final portfolio documentation remain outstanding.
 
 Local Python development setup belongs to a separate automation utility.
 
