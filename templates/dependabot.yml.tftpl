@@ -2,7 +2,7 @@ version: 2
 
 updates:
   - package-ecosystem: pip
-    directory: "/"
+    directory: "${pip_directory}"
     schedule:
       interval: weekly
     groups:
@@ -20,3 +20,14 @@ updates:
         applies-to: security-updates
         patterns:
           - "*"
+%{ if npm_directory != null }
+  - package-ecosystem: npm
+    directory: "${npm_directory}"
+    schedule:
+      interval: weekly
+    groups:
+      security-fixes:
+        applies-to: security-updates
+        patterns:
+          - "*"
+%{ endif ~}
