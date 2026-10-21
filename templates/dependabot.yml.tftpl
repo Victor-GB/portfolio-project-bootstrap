@@ -1,6 +1,7 @@
 version: 2
 
 updates:
+%{~ if pip_enabled }
   - package-ecosystem: pip
     directory: "${pip_directory}"
     schedule:
@@ -10,7 +11,7 @@ updates:
         applies-to: security-updates
         patterns:
           - "*"
-
+%{ endif }
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
@@ -30,4 +31,10 @@ updates:
         applies-to: security-updates
         patterns:
           - "*"
+%{ endif ~}
+%{ if terraform_directory != null }
+  - package-ecosystem: terraform
+    directory: "${terraform_directory}"
+    schedule:
+      interval: weekly
 %{ endif ~}

@@ -1,5 +1,10 @@
 resource "restapi_object" "codeql_default_setup" {
-  for_each = local.content_ready_repositories
+
+  for_each = {
+    for name, repo in local.content_ready_repositories :
+    name => repo
+    if var.repositories[name].codeql_enabled
+  }
 
   object_id    = each.value.full_name
   path         = "/repos/${each.value.full_name}/code-scanning/default-setup"

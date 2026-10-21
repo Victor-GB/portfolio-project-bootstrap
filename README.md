@@ -11,9 +11,13 @@ updates, weekly dependency updates, security-update grouping rules, secret
 scanning, push protection and CodeQL default setup. Issues are enabled;
 Projects and Wiki are disabled.
 
+This bootstrap repository is also managed by the configuration, with weekly
+Terraform dependency updates and the shared repository security settings.
+CodeQL is excluded here because its current source languages are HCL and Shell.
+
 The complete two-stage creation workflow has been verified on Trivia API.
 Drift detection and reconciliation have also been demonstrated. A final
-Terraform plan reported no changes across all three repositories.
+Terraform plan reported no changes across all four repositories.
 See [VERIFICATION.md](VERIFICATION.md) for the recorded evidence.
 
 Local Python development setup belongs to a separate automation utility.
@@ -31,6 +35,11 @@ Terraform manages CodeQL default setup through the Mastercard REST API
 provider, using GitHub's default query suite and standard runners.
 GitHub selects the analysis languages. Applying removal of the CodeQL
 resource disables default setup.
+
+`codeql_enabled` defaults to `true`. Set it to `false` for repositories
+where CodeQL setup is not applicable. Changing an already managed
+repository to `false` proposes removing its CodeQL resource and disabling
+default setup.
 
 Application code, tests, dependencies and development workflows remain
 owned by the consuming project. Local Git connection, initial publication
@@ -65,8 +74,10 @@ Each repository accepts these optional inputs:
 
 | Input | Default | Purpose |
 | --- | --- | --- |
+| `pip_enabled` | `true` | Include Python dependency updates |
 | `pip_directory` | `"/"` | Directory containing Python dependency files |
 | `npm_directory` | `null` | Directory containing npm dependency files; omitted from Dependabot when unset |
+| `terraform_directory` | `null` | Directory containing Terraform configuration; omitted from Dependabot when unset |
 
 Directory paths are relative to the repository root and start with `/`.
 GitHub Actions updates always use `/`.
@@ -80,6 +91,29 @@ npm_directory = "/frontend"
 
 Terraform renders `templates/dependabot.yml.tftpl` and publishes the result
 as `.github/dependabot.yml` in each ready repository.
+
+## Continuous integration
+
+The [Terraform checks workflow](.github/workflows/terraform-checks.yml)
+runs on pull requests and pushes to `main`. It checks formatting,
+installs the locked providers without initialising the HCP backend,
+and validates the Terraform configuration.
+
+CI uses Terraform 1.16.6 and read-only repository permissions. It requires
+no personal GitHub or HCP credentials and does not run plans or applies.
+Reviewed plans and applies remain local operations.
+
+The committed provider lock file includes checksums for both the Ubuntu
+ARM64 development VM and the Linux AMD64 CI runner. When deliberately
+updating provider versions, refresh both platforms:
+
+```bash
+terraform providers lock -platform=linux_arm64 -platform=linux_amd64
+```
+
+References: [Terraform validation](https://developer.hashicorp.com/terraform/cli/commands/validate),
+[provider locking across platforms](https://developer.hashicorp.com/terraform/cli/commands/providers/lock#specifying-target-platforms),
+and [setup-terraform](https://github.com/hashicorp/setup-terraform).
 
 ## GitHub API authentication
 
