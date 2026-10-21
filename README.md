@@ -32,8 +32,23 @@ GitHub selects the analysis languages. Applying removal of the CodeQL
 resource disables default setup.
 
 Application code, tests, dependencies and development workflows remain
-owned by the consuming project. Local checkout configuration, Git remotes,
-virtual environments and hooks belong to a separate Python utility.
+owned by the consuming project. Local Git connection, initial publication
+and checkout synchronisation are manual. Python environments and
+development tooling remain outside this Terraform project's scope.
+
+For a new repository, `content_ready` defaults to `false`. The first
+reviewed apply creates the repository and its repository-level settings,
+while deferring the Dependabot file and CodeQL setup. After manually
+publishing the scaffold as `main`, set `content_ready = true`, review and
+apply a fresh plan, then synchronise the local checkout.
+
+Existing populated repositories explicitly use `content_ready = true`.
+Keep this value after setup: changing it to `false` proposes removing the
+Dependabot file and disabling CodeQL.
+
+Compatibility with Fyyur and Neo has been verified through a no-change
+plan. The complete staged creation workflow awaits verification on a new
+project.
 
 Existing resources will be inspected and imported before applying changes.
 Adoption must include review of other repository properties controlled

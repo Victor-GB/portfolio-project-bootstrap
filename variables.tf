@@ -3,8 +3,9 @@ variable "repositories" {
   type = map(
     object(
       {
-        description = string
-        visibility  = string
+        description   = string
+        visibility    = string
+        content_ready = optional(bool, false)
       }
     )
   )

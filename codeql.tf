@@ -1,5 +1,5 @@
 resource "restapi_object" "codeql_default_setup" {
-  for_each = github_repository.projects
+  for_each = local.content_ready_repositories
 
   object_id    = each.value.full_name
   path         = "/repos/${each.value.full_name}/code-scanning/default-setup"
