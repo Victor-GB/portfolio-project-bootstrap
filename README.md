@@ -92,6 +92,29 @@ npm_directory = "/frontend"
 Terraform renders `templates/dependabot.yml.tftpl` and publishes the result
 as `.github/dependabot.yml` in each ready repository.
 
+## Continuous integration
+
+The [Terraform checks workflow](.github/workflows/terraform-checks.yml)
+runs on pull requests and pushes to `main`. It checks formatting,
+installs the locked providers without initialising the HCP backend,
+and validates the Terraform configuration.
+
+CI uses Terraform 1.16.6 and read-only repository permissions. It requires
+no personal GitHub or HCP credentials and does not run plans or applies.
+Reviewed plans and applies remain local operations.
+
+The committed provider lock file includes checksums for both the Ubuntu
+ARM64 development VM and the Linux AMD64 CI runner. When deliberately
+updating provider versions, refresh both platforms:
+
+```bash
+terraform providers lock -platform=linux_arm64 -platform=linux_amd64
+```
+
+References: [Terraform validation](https://developer.hashicorp.com/terraform/cli/commands/validate),
+[provider locking across platforms](https://developer.hashicorp.com/terraform/cli/commands/providers/lock#specifying-target-platforms),
+and [setup-terraform](https://github.com/hashicorp/setup-terraform).
+
 ## GitHub API authentication
 
 Authenticate with GitHub CLI before running Terraform. The GitHub provider
