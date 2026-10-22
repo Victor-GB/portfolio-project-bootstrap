@@ -13,21 +13,38 @@ Projects and Wiki are disabled.
 
 This bootstrap repository is also managed by the configuration, with weekly
 Terraform dependency updates and the shared repository security settings.
-CodeQL is excluded here because its current source languages are HCL and Shell.
+CodeQL default setup is disabled for this repository through
+`codeql_enabled = false`.
 
 The complete two-stage creation workflow has been verified on Trivia API.
 Drift detection and reconciliation have also been demonstrated. A final
 Terraform plan reported no changes across all four repositories.
 See [VERIFICATION.md](VERIFICATION.md) for the recorded evidence.
 
-Local Python development setup belongs to a separate automation utility.
+## Architecture
+
+Terraform runs locally on Ubuntu, with state stored in HCP Terraform.
+
+```mermaid
+flowchart LR
+  inputs["Repository inputs"] --> tf["Local Terraform CLI"]
+  config["Terraform files and Dependabot template"] --> tf
+  tf <--> state["HCP Terraform state"]
+  tf --> github["GitHub provider"]
+  tf --> rest["REST API provider"]
+  github --> repos["Repositories, security settings and Dependabot files"]
+  rest --> codeql["CodeQL default setup"]
+```
+
+GitHub Actions checks formatting and configuration validity.
+Plans and applies remain reviewed local operations.
 
 ## Ownership and verification
 
-Terraform will manage repository identity, description, visibility,
+Terraform manages repository identity, description, visibility,
 Dependabot alerts and security updates, secret scanning and push protection.
 
-Terraform will own `.github/dependabot.yml` after existing content has
+Terraform owns `.github/dependabot.yml` after existing content has
 been inspected and reconciled. Subsequent deliberate changes to this
 file must also be reflected in the Terraform configuration.
 
@@ -60,7 +77,7 @@ The staged workflow was verified on Trivia API while preserving its supplied
 scaffold history, original remote and application files. The local checkout
 was then synchronised with the Terraform-created Dependabot commit.
 
-Existing resources will be inspected and imported before applying changes.
+When adopting existing resources, inspect and import them before applying changes.
 Adoption must include review of other repository properties controlled
 by the same Terraform resource.
 
@@ -91,6 +108,62 @@ npm_directory = "/frontend"
 
 Terraform renders `templates/dependabot.yml.tftpl` and publishes the result
 as `.github/dependabot.yml` in each ready repository.
+
+## Example inputs
+
+[terraform.tfvars.example](terraform.tfvars.example) demonstrates three layouts:
+
+- A Python repository using the default dependency directory.
+- A Flask/React repository with separate backend and frontend directories.
+- A Terraform repository with Python updates and CodeQL disabled.
+
+Terraform does not load the example file automatically. Use it as a reference
+when editing your local `terraform.tfvars`.
+
+Preserve existing managed repository entries. Removing an entry can propose
+deleting that repository and its associated resources.
+
+This root configuration uses account-specific GitHub ownership, HCP workspace
+settings and import blocks. Review `providers.tf`, `backend.tf` and `imports.tf`
+before adapting it for another account.
+
+## Reviewed plan and apply
+
+Run commands from the bootstrap project root after configuring inputs and
+authentication. Initialise a fresh checkout with `terraform init`.
+
+Load the logging helper and save a plan:
+
+```bash
+source scripts/aliases.sh
+lg terraform plan -out=tmp/repository-setup.tfplan
+```
+
+Review the target repositories and every proposed creation, import, update
+or deletion. Resolve unexpected changes before applying.
+
+Apply the reviewed saved plan:
+
+```bash
+lg terraform apply tmp/repository-setup.tfplan
+```
+
+Applying a saved plan does not prompt for approval again. If inputs,
+configuration or state change, generate and review a fresh plan.
+
+For new repositories, perform this sequence first with `content_ready = false`.
+Publish the scaffold manually, set readiness to `true`, then repeat the
+plan/review/apply sequence. Existing resources require the appropriate
+adoption steps before applying.
+
+Synchronise local checkouts with any Terraform-created commits, then
+check for convergence:
+
+```bash
+lg terraform plan
+```
+
+The expected result is no changes.
 
 ## Continuous integration
 
@@ -128,6 +201,16 @@ export REST_API_BEARER
 
 Run this directly, without logging token retrieval. The token is supplied
 through the environment rather than committed configuration.
+
+## Required access
+
+GitHub credentials must permit the intended repository creation, configuration
+file writes and security-setting changes. Access must cover every repository
+in the input map.
+
+Manual Git publication over SSH requires separate SSH authentication.
+HCP Terraform credentials must authorise access to the configured workspace
+and its state.
 
 ## Terraform state
 
