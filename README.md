@@ -3,6 +3,22 @@
 Terraform automation for creating GitHub repositories and managing a
 consistent repository security baseline.
 
+## Terraform skills demonstrated
+
+| Concept or practice | Application in this project | Evidence |
+| --- | --- | --- |
+| Typed inputs and defaults | A map of repository objects defines reusable inputs, with optional attributes for readiness, dependency directories and security features. | [variables.tf](variables.tf) |
+| Resource iteration and dependencies | `for_each` manages multiple repositories; chained resource maps establish dependencies between repositories, vulnerability alerts and security updates. | [repositories.tf](repositories.tf), [security.tf](security.tf) |
+| Local values and filtered expressions | Filtered `for` expressions select repositories ready for configuration and those eligible for CodeQL setup. | [locals.tf](locals.tf), [codeql.tf](codeql.tf) |
+| Conditional templates | `templatefile()`, interpolation and conditional directives generate Dependabot configuration for each repository's dependency ecosystems and directories. | [dependabot.tf](dependabot.tf), [template](templates/dependabot.yml.tftpl) |
+| Multiple providers and API integration | The GitHub provider manages repository resources; the REST API provider manages CodeQL default setup using JSON request bodies built with `jsonencode()`. | [providers.tf](providers.tf), [codeql.tf](codeql.tf) |
+| Declarative imports | Import blocks bring existing repositories and security settings under Terraform management. | [imports.tf](imports.tf) |
+| Data sources and derived outputs | A data source reads the authenticated GitHub identity; a `for` expression produces repository SSH URLs keyed by name. | [identity.tf](identity.tf), [outputs.tf](outputs.tf) |
+| Remote state and drift reconciliation | HCP Terraform stores state separately from local execution. Verification demonstrates detecting and correcting a deliberately changed setting. | [backend.tf](backend.tf), [verification](VERIFICATION.md) |
+| Reproducible tooling and CI | Pinned Terraform and provider versions, a committed provider lock file and GitHub Actions support consistent formatting and configuration validation. | [versions.tf](versions.tf), [lock file](.terraform.lock.hcl), [workflow](.github/workflows/terraform-checks.yml) |
+
+## Verified outcomes
+
 Repository creation has been verified on Fyyur and Trivia API, and the
 existing asteroid-approach-explorer repository (Neo) has been adopted.
 
