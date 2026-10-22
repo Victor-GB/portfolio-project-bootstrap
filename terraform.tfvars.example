@@ -1,0 +1,25 @@
+# Illustrative inputs; Terraform does not load this file automatically.
+# Merge suitable entries into terraform.tfvars without removing managed repositories.
+
+repositories = {
+  "example-api" = {
+    description   = "A Flask API with a React frontend."
+    visibility    = "public"
+    content_ready = false
+    pip_directory = "/backend"
+    npm_directory = "/frontend"
+  }
+
+  "example-python" = {
+    description = "A Python application with dependencies at the repository root."
+    visibility  = "public"
+  }
+
+  "example-infrastructure" = {
+    description         = "Terraform configuration for managing infrastructure."
+    visibility          = "public"
+    pip_enabled         = false
+    codeql_enabled      = false
+    terraform_directory = "/"
+  }
+}

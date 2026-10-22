@@ -18,3 +18,23 @@
 - Original scaffold commit: f1dfc5182fca2355332373e89600e3a122c3d778.
 - Only .github/dependabot.yml was added to the scaffold.
 - Final Terraform plan: no changes across Fyyur, Neo and Trivia.
+
+## Bootstrap repository self-adoption
+
+- Adopted this existing repository and its Dependabot alert/security-update settings into Terraform state.
+- Terraform created `.github/dependabot.yml` with GitHub Actions and Terraform update entries.
+- Python dependency updates and CodeQL default setup are disabled for this repository.
+- The follow-up Terraform plan reported no changes across all four managed repositories.
+
+## Terraform CI and dependency checks
+
+Both recorded runs succeeded on commit
+`61377a6d769c1adea452ad971e7849c815b5cda5`:
+
+- [Terraform checks](https://github.com/Victor-GB/portfolio-project-bootstrap/actions/runs/39686567158):
+  formatting and configuration validation passed.
+- [Dependabot GitHub Actions update check](https://github.com/Victor-GB/portfolio-project-bootstrap/actions/runs/39687154726):
+  succeeded after the Terraform workflow was added.
+
+These results verify repository automation and configuration checks.
+They do not establish application completeness or application test success.
